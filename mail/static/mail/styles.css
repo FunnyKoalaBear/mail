@@ -1,0 +1,167 @@
+textarea {
+    min-height: 400px;
+}
+
+
+/* Dark Theme Styles for Email Layout */
+:root {
+    --dark-bg: #121212;
+    --dark-secondary: #1e1e1e;
+    --dark-tertiary: #2d2d2d;
+    --text-primary: #e0e0e0;
+    --text-secondary: #ababab;
+    --accent-color: #3a7bd5;
+    --accent-hover: #2d62b3;
+    --danger: #d32f2f;
+    --success: #388e3c;
+  }
+  
+  body {
+    background-color: var(--dark-bg);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    transition: all 0.3s ease;
+  }
+  
+  h2, h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+  
+  hr {
+    border-color: var(--dark-tertiary);
+    margin: 1rem 0;
+  }
+  
+  /* Button Styles */
+  .btn {
+    border-radius: 4px;
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-outline-primary {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    background-color: transparent;
+  }
+  
+  .btn-outline-primary:hover, 
+  .btn-outline-primary:focus {
+    color: var(--text-primary);
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+  }
+  
+  .btn-primary {
+    color: var(--text-primary);
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+  }
+  
+  .btn-primary:hover,
+  .btn-primary:focus {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+  }
+  
+  /* Form Controls */
+  .form-control {
+    background-color: var(--dark-tertiary);
+    border: 1px solid var(--dark-tertiary);
+    border-radius: 4px;
+    color: var(--text-primary);
+    padding: 0.375rem 0.75rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+  .form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(58, 123, 213, 0.25);
+    outline: 0;
+  }
+  
+  .form-control:disabled {
+    background-color: var(--dark-secondary);
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+  
+  .form-control::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  /* Textarea specific */
+  textarea.form-control {
+    min-height: 150px;
+    resize: vertical;
+  }
+  
+  /* Email Views */
+  #emails-view, #compose-view {
+    background-color: var(--dark-secondary);
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+    margin-top: 1rem;
+  }
+  
+  /* Email List Styling */
+  .email-item {
+    background-color: var(--dark-tertiary);
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+    padding: 0.75rem;
+    transition: background-color 0.2s ease;
+  }
+  
+  .email-item:hover {
+    background-color: rgba(58, 123, 213, 0.1);
+  }
+  
+  .email-item.read {
+    opacity: 0.7;
+  }
+  
+  .email-item.unread {
+    border-left: 3px solid var(--accent-color);
+  }
+  
+  /* Email Detail View */
+  .email-detail {
+    background-color: var(--dark-tertiary);
+    border-radius: 4px;
+    padding: 1rem;
+  }
+  
+  .email-header {
+    border-bottom: 1px solid var(--dark-tertiary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  /* Make links visible in dark mode */
+  a {
+    color: var(--accent-color);
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Button group styling */
+  .btn-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
