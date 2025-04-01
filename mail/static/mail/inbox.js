@@ -10,8 +10,13 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#compose').addEventListener('click', compose_email);
 
   // By default, load the inbox
+  console.log("Loading inbox");
   load_mailbox('inbox');
+
 });
+
+console.log("JavaScript is running!");
+alert("JavaScript is loaded!");
 
 
 
@@ -30,10 +35,27 @@ function compose_email() {
 
 
 function load_mailbox(mailbox) {
-  
+  console.log(`Loading mailbox: ${mailbox}`);
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+
+
+  // Fetch emails from the mailbox
+  fetch('/emails/inbox')
+  .then(response => response.json())
+  .then(emails => {
+    //print emails to the console
+    console.log(emails);
+
+    if (emails.length === 0) {
+      console.log("No emails found in this mailbox.");
+    }
+  })
+
+  .catch(error => {
+    console.error('Error:', error);
+  })
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
