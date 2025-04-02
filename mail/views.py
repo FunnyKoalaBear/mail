@@ -180,3 +180,12 @@ def register(request):
 
 
 #i added this!
+@login_required
+@csrf_exempt
+def delete_email(request, email_id):
+    try:
+        email = Email.objects.get(id=email_id)
+        email.delete()
+        return JsonResponse({"message": "Email deleted."}, status=204)
+    except Email.DoesNotExist:
+        return JsonResponse({"error": "Email not found."}, status=404)

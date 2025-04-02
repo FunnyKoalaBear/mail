@@ -122,6 +122,12 @@ function load_mailbox(mailbox) {
 function load_email(email_id) {
 
   let emailDiv = document.getElementById(`${email_id}`);
+  
+  if (!emailDiv) {
+    console.error(`Email div with ID ${email_id} not found.`);
+    return;
+  }
+
   let expandedView = emailDiv.querySelector('.expanded-view');
   
   if (expandedView) {
@@ -168,6 +174,11 @@ function load_email(email_id) {
       //reply button functionality
       let replyButton = document.querySelector('#reply');
       replyButton.addEventListener('click', () => reply_email(email_id));
+
+      //delete button functionality
+      let deleteButton = document.querySelector('#delete');
+      deleteButton.addEventListener('click', () => delete_email(email_id));
+
       //read functionality
       
       //archive button functionality
@@ -202,6 +213,9 @@ function load_email(email_id) {
   )}
 }
 
+
+
+
 function reply_email(email_id) {
   // Show compose view and hide other views
   // Show compose view and hide other views
@@ -235,4 +249,34 @@ function reply_email(email_id) {
     console.error('Error: ', error);
   })
   
+}
+
+
+function delete_email(email_id) {
+  // Send a DELETE request to delete the email
+  console.log("Deleting email with ID:", email_id);
+  console.log(`/emails/${email_id}/delete/`);
+
+  fetch(`/emails/${email_id}/delete/`, {
+    method: 'DELETE',
+  })
+  .then(response => {
+    if (!response.ok) {
+        throw new Error('Failed to delete email');
+    }
+    if (response.status === 204) {
+        console.log('Email deleted successfully');
+        return null; // No content to parse
+    }
+    return response.json();  // Parse the response JSON (success message)
+  })
+  .then(data => {
+    if (data && data.message) {
+      console.log(data.message); // Log success message
+    }
+    load_mailbox('inbox');
+  })
+  .catch(error => {
+    console.error('Error deleting email: ', error);
+  });
 }
