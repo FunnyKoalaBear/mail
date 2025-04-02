@@ -153,7 +153,7 @@ function load_email(email_id) {
       //create and append the expanded view 
       let expandedView = document.createElement('div');
       expandedView.className = 'expanded-view'; // Add a class to the div for styling
-      expandedView.id = {email_id}; // Set the id of the div to the email id
+      expandedView.id = email_id; // Set the id of the div to the email id
       
       //new stuff to show
       expandedView.innerHTML = `
@@ -173,24 +173,30 @@ function load_email(email_id) {
       //archive button functionality
       let archiveButton = document.querySelector('#archive');
       archiveButton.addEventListener('click', () => {
+        console.log("Archiving email with ID:", email_id);
+        
+        // Check if the email is already archived
+        let archiving = !email.archived;
+        console.log("Current archived status:", archiving);
+
         //fetch and archive
         fetch(`/emails/${email_id}`, {
           method: 'PUT',
           body: JSON.stringify({
-          archived: true
+          archived: archiving // Toggle the archived status
+          })
         })
         //load inbox after archiving
         .then(() => load_mailbox('inbox'))
         .catch(error => {
           console.error("Error archiving: ", error);
         })
-      })
-      
-
+        
+        .catch(error => {
+          console.error('Error: ', error);
+        })
     })
-    .catch(error => {
-      console.error('Error: ', error);
-    })
+    
     
     }
   )}
