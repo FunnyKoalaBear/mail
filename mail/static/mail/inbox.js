@@ -72,6 +72,34 @@ function load_mailbox(mailbox) {
     if (emails.length === 0) {
       console.log("No emails found in this mailbox.");
     }
+
+    //Show mails in mailbox
+    let emailsView = document.querySelector('#emails-view');
+    emailsView.innerHTML = ''; // Clear previous emails
+    emailsView.innerHTML = '<h3>Inbox</h3>'; // Add a header for the inbox
+     
+
+    // Loop through each email and create a div for it
+    emails.forEach(email => {
+      let emailDiv = document.createElement('div');
+      emailDiv.className = 'email-item';
+
+      let emailLink = document.createElement('a');    
+      emailLink.href = `/emails/${email.id}`; // Set the href attribute of the email link
+
+      emailDiv.innerHTML = `
+        <strong>From:</strong> ${email.sender} <br>
+        <strong>Subject:</strong> ${email.subject} <br>
+        <strong>Timestamp:</strong> ${email.timestamp} <br>
+        
+      `; //populating the div with the email content
+      
+      console.log(email.id);
+      emailsView.appendChild(emailDiv); //append email div to inbox div
+      emailDiv.appendChild(emailLink); //append the email link to the email div
+
+    })
+
   })
 
   .catch(error => {
