@@ -33,6 +33,7 @@ function compose_email() {
   document.querySelector('#compose-body').value = '';
 }
 
+
 function send_email() {
   
     fetch('/emails', {
@@ -69,23 +70,25 @@ function load_mailbox(mailbox) {
     console.log(emails);
     console.log("All emails loaded successfully!");
 
-    if (emails.length === 0) {
-      console.log("No emails found in this mailbox.");
-    }
-
     //Show mails in mailbox
     let emailsView = document.querySelector('#emails-view');
     emailsView.innerHTML = ''; // Clear previous emails
     emailsView.innerHTML = '<h3>Inbox</h3>'; // Add a header for the inbox
-     
+
+    //condition to check if there are no emails
+    if (emails.length === 0) {
+      console.log("No emails found in this mailbox.");
+      let noneDiv = document.createElement('h6');
+      noneDiv.textContent = "// Sorry, no emails found at the moment";
+      emailsView.appendChild(noneDiv);
+      return; // Exit the function if no emails are found
+    }
 
     // Loop through each email and create a div for it
     emails.forEach(email => {
       let emailDiv = document.createElement('div');
-      emailDiv.className = 'email-item';
-
-      let emailLink = document.createElement('a');    
-      emailLink.href = `/emails/${email.id}`; // Set the href attribute of the email link
+      emailDiv.className = 'email-item'; // Add a class to the div for styling
+      emailDiv.id = email.id; // Set the id of the div to the email id
 
       emailDiv.innerHTML = `
         <strong>From:</strong> ${email.sender} <br>
@@ -94,14 +97,12 @@ function load_mailbox(mailbox) {
         
       `; //populating the div with the email content
       
-      console.log(email.id);
+      
+      emailDiv.addEventListener('click', () => load_email(email.id))
       emailsView.appendChild(emailDiv); //append email div to inbox div
-      emailDiv.appendChild(emailLink); //append the email link to the email div
-
     })
 
   })
-
   .catch(error => {
     console.error('Error:', error);
   })
@@ -109,3 +110,69 @@ function load_mailbox(mailbox) {
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 }
+
+
+
+function load_email(email_id) {
+
+  let emailDiv = document.getElementById(`${email_id}`);
+  let expandedView = emailDiv.querySelector('.expanded-view');
+  
+  if (expandedView) {
+    //closing an open email
+    expandedView.remove(); // Remove the previous expanded view if it exists
+    emailDiv.innerHTML = `
+      <strong>From:</strong> ${emailDiv.dataset.sender} <br>
+      <strong>Subject:</strong> ${emailDiv.dataset.subject} <br>
+      <strong>Timestamp:</strong> ${emailDiv.dataset.timestamp} <br>
+    `; 
+    console.log("Email closed successfully!");
+
+  }
+  else {
+    // Create a new div for the expanded view  
+    // Fetch the email details
+    fetch(`/emails/${email_id}`)
+    .then(response => response.json())
+    .then(email => {
+      //display the email content
+      console.log("Email loaded successfully!");
+
+      emailDiv.dataset.sender = email.sender;
+      emailDiv.dataset.subject = email.subject;
+      emailDiv.dataset.timestamp = email.timestamp;
+      
+      //retaining the email content in the div when collapsed
+      emailDiv.innerHTML = `
+        <strong>From:</strong> ${email.sender} <br>
+        <strong>Subject:</strong> ${email.subject} <br>
+        <strong>Timestamp:</strong> ${email.timestamp} <br>
+      `;
+      
+      //create and append the expanded view 
+      let expandedView = document.createElement('div');
+      expandedView.className = 'expanded-view'; // Add a class to the div for styling
+      expandedView.id = {email_id}; // Set the id of the div to the email id
+      
+      expandedView.innerHTML = `
+        <strong>From:</strong> ${email.sender} <br>
+        <strong>To:</strong> ${email.sender} <br>
+        <strong>Subject:</strong> ${email.subject} <br>
+        <strong>Timestamp:</strong> ${email.timestamp} <br>
+        
+        <hr>
+        <p>${email.body}</p>
+        <button class="btn btn-sm btn-outline-primary" id="reply">Reply</button>
+        `; //populating the expanded view div with the email content
+    
+      // Create a new div for the expanded view
+      console.log(emailDiv);
+      console.log("hi"); 
+    })
+
+    
+  
+  }
+
+}
+
