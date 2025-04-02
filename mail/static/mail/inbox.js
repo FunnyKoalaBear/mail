@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // By default, load the inbox
   console.log("Loading inbox");
   load_mailbox('inbox');
+  
 });
 
 
@@ -64,20 +65,20 @@ function load_mailbox(mailbox) {
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
 
-  console.log("trying to load mail box");
+  //Show mails in mailbox
+  let emailsView = document.querySelector('#emails-view');
+  emailsView.innerHTML = ''; // Clear previous emails
+  emailsView.innerHTML = '<h3>Inbox</h3>'; // Add a header for the inbox
+
 
   // Fetch emails from the mailbox
-  fetch('/emails/inbox')
+  fetch(`/emails/${mailbox}`)
   .then(response => response.json())
   .then(emails => {
-    //print emails to the console
-    console.log(emails);
-    console.log("All emails loaded successfully!");
 
-    //Show mails in mailbox
-    let emailsView = document.querySelector('#emails-view');
-    emailsView.innerHTML = ''; // Clear previous emails
-    emailsView.innerHTML = '<h3>Inbox</h3>'; // Add a header for the inbox
+    console.log("Emails data:", emails);
+    console.log("All emails loaded successfully!");
+    
 
     //condition to check if there are no emails
     if (emails.length === 0) {
@@ -117,6 +118,7 @@ function load_mailbox(mailbox) {
 
 
 
+
 function load_email(email_id) {
 
   let emailDiv = document.getElementById(`${email_id}`);
@@ -125,12 +127,7 @@ function load_email(email_id) {
   if (expandedView) {
     //closing an open email
     expandedView.remove(); // Remove the previous expanded view if it exists
-    emailDiv.innerHTML = `
-      <strong>From:</strong> ${emailDiv.dataset.sender} <br>
-      <strong>Subject:</strong> ${emailDiv.dataset.subject} <br>
-      <strong>Timestamp:</strong> ${emailDiv.dataset.timestamp} <br>
-    `; 
-    console.log("Email closed successfully!");
+    
 
   }
   else {
@@ -163,6 +160,8 @@ function load_email(email_id) {
         <hr>
         <p>${email.body}</p>
         <button class="btn btn-sm btn-outline-primary" id="reply">Reply</button>
+        <button class="btn btn-sm btn-outline-primary" id="archive">Archive</button>
+        <button class="btn btn-sm btn-outline-primary" id="delete">Delete</button>
         `; //populating the expanded view div with the email content
       emailDiv.appendChild(expandedView); // Append the expanded view to the email div
       
@@ -170,48 +169,64 @@ function load_email(email_id) {
       let replyButton = document.querySelector('#reply');
       replyButton.addEventListener('click', () => reply_email(email_id));
       //read functionality
-      //archive button functionality
-
-    })
-  }
-
-  function reply_email(email_id) {
-    // Show compose view and hide other views
-    // Show compose view and hide other views
-    document.querySelector('#emails-view').style.display = 'none';
-    document.querySelector('#compose-view').style.display = 'block'; //block means show the block bruh 
-
-    // Fetch the email details
-    fetch(`/emails/${email_id}`)
-    .then(response => response.json())
-    .then(email => {
-
-      //populating the compose fields with the email content
-      document.querySelector('#compose-recipients').value = email.sender; // Set the recipient to the original sender
-
-      let subject = email.subject;
-      let match = subject.match(/^Re (\d+): (.*)$/); // Check if subject already has "Re X: "
-      if (match) {
-        let replyCount = parseInt(match[1]) + 1; // Increment the count
-        subject = `Re ${replyCount}: ${match[2]}`; // Update subject
-      } else if (subject.startsWith("Re: ")) {
-        subject = `Re 2: ${subject.slice(4)}`; // Convert "Re: " to "Re 2: "
-      } else {
-        subject = "Re 1: " + subject; // First reply
-      }
-      document.querySelector('#compose-subject').value = subject; // Set the subject to the original subject
       
-      document.querySelector('#compose-body').value = '';
+      //archive button functionality
+      let archiveButton = document.querySelector('#archive');
+      archiveButton.addEventListener('click', () => {
+        //fetch and archive
+        fetch(`/emails/${email_id}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+          archived: true
+        })
+        //load inbox after archiving
+        .then(() => load_mailbox('inbox'))
+        .catch(error => {
+          console.error("Error archiving: ", error);
+        })
+      })
+      
 
     })
     .catch(error => {
       console.error('Error: ', error);
     })
     
-  }
-
-
+    }
+  )}
 }
 
+function reply_email(email_id) {
+  // Show compose view and hide other views
+  // Show compose view and hide other views
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'block'; //block means show the block bruh 
 
+  // Fetch the email details
+  fetch(`/emails/${email_id}`)
+  .then(response => response.json())
+  .then(email => {
 
+    //populating the compose fields with the email content
+    document.querySelector('#compose-recipients').value = email.sender; // Set the recipient to the original sender
+
+    let subject = email.subject;
+    let match = subject.match(/^Re (\d+): (.*)$/); // Check if subject already has "Re X: "
+    if (match) {
+      let replyCount = parseInt(match[1]) + 1; // Increment the count
+      subject = `Re ${replyCount}: ${match[2]}`; // Update subject
+    } else if (subject.startsWith("Re: ")) {
+      subject = `Re 2: ${subject.slice(4)}`; // Convert "Re: " to "Re 2: "
+    } else {
+      subject = "Re 1: " + subject; // First reply
+    }
+    document.querySelector('#compose-subject').value = subject; // Set the subject to the original subject
+    
+    document.querySelector('#compose-body').value = '';
+
+  })
+  .catch(error => {
+    console.error('Error: ', error);
+  })
+  
+}
