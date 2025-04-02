@@ -1,22 +1,23 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-  // Use buttons to toggle between views
+  // BUTTONS to toggle between views
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
-
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
-  
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-  
   document.querySelector('#compose').addEventListener('click', compose_email);
+
+  //buttons to send the email
+  document.querySelector('#compose-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission
+    send_email(); // Call the function to send the email
+    console.log("Form submitted");
+  });
 
   // By default, load the inbox
   console.log("Loading inbox");
   load_mailbox('inbox');
-
 });
 
-console.log("JavaScript is running!");
-alert("JavaScript is loaded!");
 
 
 
@@ -32,14 +33,33 @@ function compose_email() {
   document.querySelector('#compose-body').value = '';
 }
 
+function send_email() {
+  
+    fetch('/emails', {
+      method: "POST",
+      body: JSON.stringify({
+          recipients: document.querySelector('#compose-recipients').value,
+          subject: document.querySelector('#compose-subject').value,
+          body: document.querySelector('#compose-body').value
+      })  
+    })
+  
+    .then(response => response.json())
+    .then(result => {
+      // Print result
+      console.log(result);
+    })
+
+    load_mailbox('sent'); // Load the sent mailbox after sending the email
+}
 
 
 function load_mailbox(mailbox) {
-  console.log(`Loading mailbox: ${mailbox}`);
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
 
+  console.log("trying to load mail box");
 
   // Fetch emails from the mailbox
   fetch('/emails/inbox')
@@ -47,6 +67,7 @@ function load_mailbox(mailbox) {
   .then(emails => {
     //print emails to the console
     console.log(emails);
+    console.log("All emails loaded successfully!");
 
     if (emails.length === 0) {
       console.log("No emails found in this mailbox.");
