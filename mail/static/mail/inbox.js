@@ -154,24 +154,15 @@ function load_email(email_id) {
       expandedView.className = 'expanded-view'; // Add a class to the div for styling
       expandedView.id = {email_id}; // Set the id of the div to the email id
       
+      //new stuff to show
       expandedView.innerHTML = `
-        <strong>From:</strong> ${email.sender} <br>
-        <strong>To:</strong> ${email.sender} <br>
-        <strong>Subject:</strong> ${email.subject} <br>
-        <strong>Timestamp:</strong> ${email.timestamp} <br>
-        
         <hr>
         <p>${email.body}</p>
         <button class="btn btn-sm btn-outline-primary" id="reply">Reply</button>
         `; //populating the expanded view div with the email content
-    
-      // Create a new div for the expanded view
-      console.log(emailDiv);
-      console.log("hi"); 
-    })
+      emailDiv.appendChild(expandedView); // Append the expanded view to the email div
 
-    
-  
+    })
   }
 
 }
