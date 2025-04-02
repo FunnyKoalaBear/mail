@@ -34,6 +34,8 @@ function compose_email() {
 }
 
 
+
+
 function send_email() {
   
     fetch('/emails', {
@@ -53,6 +55,8 @@ function send_email() {
 
     load_mailbox('sent'); // Load the sent mailbox after sending the email
 }
+
+
 
 
 function load_mailbox(mailbox) {
@@ -161,9 +165,53 @@ function load_email(email_id) {
         <button class="btn btn-sm btn-outline-primary" id="reply">Reply</button>
         `; //populating the expanded view div with the email content
       emailDiv.appendChild(expandedView); // Append the expanded view to the email div
+      
+      //reply button functionality
+      let replyButton = document.querySelector('#reply');
+      replyButton.addEventListener('click', () => reply_email(email_id));
+      //read functionality
+      //archive button functionality
 
     })
   }
 
+  function reply_email(email_id) {
+    // Show compose view and hide other views
+    // Show compose view and hide other views
+    document.querySelector('#emails-view').style.display = 'none';
+    document.querySelector('#compose-view').style.display = 'block'; //block means show the block bruh 
+
+    // Fetch the email details
+    fetch(`/emails/${email_id}`)
+    .then(response => response.json())
+    .then(email => {
+
+      //populating the compose fields with the email content
+      document.querySelector('#compose-recipients').value = email.sender; // Set the recipient to the original sender
+
+      let subject = email.subject;
+      let match = subject.match(/^Re (\d+): (.*)$/); // Check if subject already has "Re X: "
+      if (match) {
+        let replyCount = parseInt(match[1]) + 1; // Increment the count
+        subject = `Re ${replyCount}: ${match[2]}`; // Update subject
+      } else if (subject.startsWith("Re: ")) {
+        subject = `Re 2: ${subject.slice(4)}`; // Convert "Re: " to "Re 2: "
+      } else {
+        subject = "Re 1: " + subject; // First reply
+      }
+      document.querySelector('#compose-subject').value = subject; // Set the subject to the original subject
+      
+      document.querySelector('#compose-body').value = '';
+
+    })
+    .catch(error => {
+      console.error('Error: ', error);
+    })
+    
+  }
+
+
 }
+
+
 
