@@ -20,8 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-
-
 function compose_email() {
 
   // Show compose view and hide other views
@@ -35,7 +33,7 @@ function compose_email() {
 }
 
 
-
+//var(--dark-tertiary)
 
 function send_email() {
   
@@ -102,7 +100,12 @@ function load_mailbox(mailbox) {
         
       `; //populating the div with the email content
       
-      
+      // Change the background color of the email div if it is read
+      if (email.read) {
+        emailDiv.style.backgroundColor = "var(--dark-tertiary)";
+      }
+      console.log("Email read status:", email.read);
+
       emailDiv.addEventListener('click', () => load_email(email.id))
       emailsView.appendChild(emailDiv); //append email div to inbox div
     })
@@ -156,6 +159,7 @@ function load_email(email_id) {
         <strong>Timestamp:</strong> ${email.timestamp} <br>
       `;
       
+      
       //create and append the expanded view 
       let expandedView = document.createElement('div');
       expandedView.className = 'expanded-view'; // Add a class to the div for styling
@@ -180,6 +184,22 @@ function load_email(email_id) {
       deleteButton.addEventListener('click', () => delete_email(email_id));
 
       //read functionality
+      if (!email.read) {
+        fetch(`/emails/${email_id}`, {
+          method: 'PUT',
+          body: JSON.stringify ({
+            read: true 
+          })
+        })
+        .then(() => {
+          console.log("Email marked as read");
+          emailDiv.style.backgroundColor = "var(--dark-tertiary)"; // Load the inbox after marking as read
+        })
+        .catch(error => {
+          console.error("Error archiving: ", error);
+        })
+      }
+
       
       //archive button functionality
       let archiveButton = document.querySelector('#archive');
@@ -250,6 +270,7 @@ function reply_email(email_id) {
   })
   
 }
+
 
 
 function delete_email(email_id) {
