@@ -259,18 +259,19 @@ function reply_email(email_id) {
     document.querySelector('#compose-recipients').value = email.sender; // Set the recipient to the original sender
 
     let subject = email.subject;
-    let match = subject.match(/^Re (\d+): (.*)$/); // Check if subject already has "Re X: "
+    let match = subject.match(/^Re (\d+): (.*)$/);
     if (match) {
-      let replyCount = parseInt(match[1]) + 1; // Increment the count
-      subject = `Re ${replyCount}: ${match[2]}`; // Update subject
+        let replyCount = parseInt(match[1]) + 1; 
+        subject = `Re ${replyCount}: ${match[2]}`; 
     } else if (subject.startsWith("Re: ")) {
-      subject = `Re 2: ${subject.slice(4)}`; // Convert "Re: " to "Re 2: "
+        subject = `Re 2: ${subject.slice(4)}`; 
     } else {
-      subject = "Re 1: " + subject; // First reply
+        subject = `Re 1: ${subject}`; 
     }
     document.querySelector('#compose-subject').value = subject; // Set the subject to the original subject
     
-    document.querySelector('#compose-body').value = '';
+    document.querySelector('#compose-body').value = ""; // Clear previous content
+    document.querySelector('#compose-body').value = "On "  + email.timestamp + ", " + email.sender + " wrote: \n" + email.body + "\n \n In response " + email.recipients + " wrote: "; // Setting the body to include the original email content';
 
   })
   .catch(error => {
