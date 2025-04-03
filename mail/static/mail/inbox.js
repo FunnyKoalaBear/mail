@@ -39,6 +39,7 @@ function send_email() {
   
     fetch('/emails', {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
           recipients: document.querySelector('#compose-recipients').value,
           subject: document.querySelector('#compose-subject').value,
@@ -50,11 +51,14 @@ function send_email() {
     .then(result => {
       // Print result
       console.log(result);
+      if (result.message) {
+        load_mailbox('sent'); // Now it loads after confirmation
+    } else {
+        alert("Error sending email: " + result.error);
+    }
     })
-
-    load_mailbox('sent'); // Load the sent mailbox after sending the email
+    .catch(error => console.error("Error:", error));
 }
-
 
 
 
@@ -77,7 +81,7 @@ function load_mailbox(mailbox) {
     console.log("Emails data:", emails);
     console.log("All emails loaded successfully!");
     
-
+    
     //condition to check if there are no emails
     if (emails.length === 0) {
       console.log("No emails found in this mailbox.");
@@ -93,8 +97,12 @@ function load_mailbox(mailbox) {
       emailDiv.className = 'email-item'; // Add a class to the div for styling
       emailDiv.id = email.id; // Set the id of the div to the email id
 
+      let fromField = mailbox !== 'sent' ? `<strong>From:</strong> ${email.sender} <br>` : "";
+      let toField = mailbox !== 'inbox' ? `<strong>To:</strong> ${email.recipients} <br>` : "";
+
       emailDiv.innerHTML = `
-        <strong>From:</strong> ${email.sender} <br>
+        ${fromField}
+        ${toField}
         <strong>Subject:</strong> ${email.subject} <br>
         <strong>Timestamp:</strong> ${email.timestamp} <br>
         
